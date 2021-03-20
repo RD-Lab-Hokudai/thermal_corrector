@@ -9,7 +9,7 @@ A distortion corrector for Optris-PI 640.
 
 ### Requirements
 
-- Python3.6+
+- Python 3.6+
 - opencv-contrib-python 4.5.1
 
 ### How to use
