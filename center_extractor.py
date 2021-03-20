@@ -57,4 +57,5 @@ if __name__ == '__main__':
             break
 
     cv2.destroyAllWindows()
+    cv2.imwrite('points.png')
     print("Finished")

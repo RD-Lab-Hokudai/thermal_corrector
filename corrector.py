@@ -1,4 +1,4 @@
-
+import sys
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
@@ -178,7 +178,7 @@ def calc_distortion(param, points, logging=False):
     res = optimize.leastsq(fit, param, args=(calib_data.T))
     if logging:
         print(calib_data)
-    find_points(res[0], calib_data, 'res')
+    find_points(res[0], calib_data, 'Correction result')
     return res[0]
 
 
@@ -253,8 +253,16 @@ def calculate_variance(calib_data):
 
 
 if __name__ == '__main__':
-    image = cv2.imread('use_pointsX.png')
-    #image[240][320] = [255, 255, 255]
+    args = sys.argv
+    if len(args) < 2:
+        print('No image file is specified!')
+        exit()
+
+    image = cv2.imread(args[1])
+    if image is None:
+        print('Invalid image format!')
+        exit()
+
     points = []
     for i in range(len(image)):
         for j in range(len(image[0])):
@@ -263,7 +271,8 @@ if __name__ == '__main__':
 
     param = [4, 0, 0, 0, 0, 0, 0]
     res = calc_distortion(param, points, logging=True)
-    print(f'Calibration params [d, k1, k2, k3, k4, p1, p2] = {res}')
+    print(f'Calibration params [ k1, k2, k3, k4, p1, p2 ] = {res[1:]}')
+
     groundtruth = np.zeros((480, 640))
     for column in annotation_array(30, 30):
         for point in column:
@@ -271,6 +280,9 @@ if __name__ == '__main__':
             j = int(point[0] * 4) + 320
             if 0 <= i and i < 480 and 0 <= j and j < 640:
                 groundtruth[i][j] = 255
+                groundtruth[479-i][j] = 255
+                groundtruth[i][639-j] = 255
+                groundtruth[479-i][639-j] = 255
     cv2.imshow('groundtruth', groundtruth)
 
     while (True):

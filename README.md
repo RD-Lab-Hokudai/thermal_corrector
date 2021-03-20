@@ -1,82 +1,55 @@
-## Point cloud interpolater
+## Thermal image corrector
 
-A point interpolation library for LiDAR using images.
+A distortion corrector for Optris-PI 640.
 
 ### Features
 
-- Supports Linear, IP-Basic, Markov Random Field, Pixel weighted average strategy, Guided Filter, and Original method.
-- Interpolate point cloud (pcd) upto same resolution as the image (png)
+- Estimate distortion parameters from single aligned calibration image.
+- Evaluate the accuracy of distortion correction.
 
 ### Requirements
 
-- Python3.6
+- Python3.6+
+- opencv-contrib-python 4.5.1
 
 ### How to use
 
-1. Create data folder
+1. Create calibration image
 
-- Format
+Refer to my master thesis.
 
-```
-folder_name
-├──xxx.png
-├──xxx.pcd
-├──yyy.png
-├──yyy.pcd
-├──...
-```
+This tool requires aligned calibration image.
 
-You should specify same name for the image and point cloud data from the same frame.
+For Optris-PI 640, sample/calib_pi_640.png is suitable as a calibration image.
 
-Example) xxx.png and xxx.pcd.
-
-PNG images are only supported.
-
-2. Build this project
-
-In this project,
+2. Extract points from calibration image
 
 ```
-$ mkdir build
-$ cd build
-$ make
-```
-
-3. Run
-
-```
-$ ./Interpolater <folder_path> <calibration_id> <method_name>
-```
-
-If you want to output the result to file,
-
-```
-$ ./Interpolater <folder_path> > <calibration_id> <method_name> > <output_path>
+$ python3 center_extractor.py <calibration_image_path>
 ```
 
 ex)
 
 ```
-$ ./Interpolater ~/data miyanosawa_20200303 original
+$ python3 center_extractor.py sample/calib_pi_640.png
 ```
 
-#### Supported method names
+This script creates an image file named as 'points.png'.
 
-- linear
-- ip-basic
-- guided-filter
-- mrf
-- pwas
-- original
-
-### Tools
-
-For Pixel weighted average strategy and Original method, this project has hyper parameter tuner.
-
-After building, run command below.
+3. Estimate distortion parameters
 
 ```
-$ ./Tuner <folder_path> > <calibration_id> <method_name>
+$ python3 corrector.py <points_image_path>
 ```
 
-Only "pwas" and "original" are supported for <method_name>.
+To work this, you must have a points image file.
+
+For Optris-PI 640, sample/points_pi_640.png is suitable as a points image.
+
+ex)
+
+```
+$ python3 corrector.py sample/points_pi_640.png
+```
+
+This script estimates distortion parameters and variance (for evaluation).
