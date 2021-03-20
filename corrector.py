@@ -112,17 +112,16 @@ def fit(param, x):
     y2 = x[3]
     r_2 = np.square(x1) + np.square(y1)
     r_4 = np.square(r_2)
-    r_6 = ｒ_2 * r_4
-    x_delta = np.square(x1 * (1 + k1 * r_2 + k2 * r_4 + 0 * r_6) / (1 + k3 * r_2 + k4 * r_4 + 0 * r_6) +
+    x_delta = np.square(x1 * (1 + k1 * r_2 + k2 * r_4) / (1 + k3 * r_2 + k4 * r_4) +
                         2 * p1 * x1 * y1 + p2 * (r_2 + 2 * np.square(x1)) - x2)
-    y_delta = np.square(y1 * (1 + k1 * r_2 + k2 * r_4 + 0 * r_6) / (1 + k3 * r_2 + k4 * r_4 + 0 * r_6) +
+    y_delta = np.square(y1 * (1 + k1 * r_2 + k2 * r_4) / (1 + k3 * r_2 + k4 * r_4) +
                         2 * p2 * x1 * y1 + p1 * (r_2 + 2 * np.square(y1)) - y2)
     return x_delta + y_delta
 
 
 def correct(param, x):
     [k1, k2, k3, k4, p1, p2] = param
-    r_2 = x[0] ** 2 + x[0] ** 2
+    r_2 = x[0] ** 2 + x[1] ** 2
     r_4 = r_2 ** 2
     x2 = x[0] * (1 + k1 * r_2 + k2 * r_4) / (1 + k3 * r_2 + k4 * r_4) + 2 * \
         p1 * x[0] * x[1] + p2 * (r_2 + 2 * x[0] ** 2)
@@ -226,8 +225,6 @@ def find_points(param, calib_data, win_name):
     new_calib_data = np.array(new_calib_data)
     calculate_variance(new_calib_data)
     cv2.imshow(win_name, res_image)
-    cv2.imshow('repro', prev_point_map)
-    print('show image')
     return points
 
 
